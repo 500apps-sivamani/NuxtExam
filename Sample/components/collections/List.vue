@@ -17,31 +17,45 @@
         </button>
       </div>
       <div
-        v-for="(item, index) in getData.data._rawValue"
+        v-for="(item, index) in getTemplateData"
         :key="index"
         class="border p-4 rounded-md mb-3 shadow-sm bg-white"
       >
-        <section @click="prefillData(item, index)">
+        <section>
           <h5 class="font-[500] text-md mb-2">{{ item.name }}</h5>
           <span class="text-gray-600">{{ item.subject }} - </span>
           <span class="text-gray-600">{{ item.body }}</span>
         </section>
-        <TrashIcon
-          @click="deleteTemplate(item, index)"
-          class="h-5 w-5"
-          aria-hidden="true"
-        ></TrashIcon>
+        <div class="flex">
+          <div>
+            <PencilSquareIcon
+              @click="EditBtn(item, index)"
+              class="h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-gray-500 ml-3 mr-3"
+            ></PencilSquareIcon>
+          </div>
+          <div>
+            <TrashIcon
+              @click="deleteTemplate(item, index)"
+              class="h-5 w-5"
+              aria-hidden="true"
+            ></TrashIcon>
+          </div>
+        </div>
       </div>
     </div>
-    <CollectionsAdd @save="save" />
+    <CollectionsAdd v-if="!show" @save="save" />
+    <CollectionsEdit v-if="show" :emailTemplate="emailTemplate" :key="render" />
   </div>
 </template>
 
 <script setup lang="ts">
-const firstname = ref({});
-const indexValue = ref(0);
-
 import { TrashIcon } from "@heroicons/vue/24/outline";
+import { PencilSquareIcon } from "@heroicons/vue/20/solid";
+
+const render = ref(0);
+const show = ref(false);
+
+const emailTemplate = ref({});
 //GET call
 const getOptions = {
   method: "GET",
@@ -55,9 +69,11 @@ let getData = await useAuthLazyFetch(
   getOptions
 );
 
+let getTemplateData = getData.data._rawValue;
+
 //DELETE call
 
-async function deleteTemplate(item, index) {
+const deleteTemplate = async (item, index) => {
   console.log("index,item", index, item.uid);
 
   const deleteOptions = {
@@ -71,11 +87,17 @@ async function deleteTemplate(item, index) {
     deleteOptions
   );
   console.log("getDeleteData", getDeletedata);
-}
+};
+
 const save = (body: Object) => {
   console.log("ffffffffff----->", body);
   getData.data._rawValue;
 };
 
-const prefillData = (item, index) => {};
+const EditBtn = (item, index) => {
+  show.value = true;
+  emailTemplate.value = { ...item, index };
+  render.value++;
+  console.log("emailTemplate", emailTemplate);
+};
 </script>

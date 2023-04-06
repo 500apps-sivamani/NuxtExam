@@ -27,11 +27,11 @@
         </div>
       </div>
     </div>
-    <div class="row-span-2 col-span-4 bg-white mt-4 0px]">
+    <div class="row-span-2 col-span-4 bg-white mt-4 0px w-4/5">
       <div class="mx-4 h-[89%]">
         <textarea
           placeholder="Add Template Body"
-          v-model="templateTextarea"
+          v-model="templateBody"
           rows="10"
           cols="15"
           name="comment"
@@ -58,19 +58,20 @@
   </div>
 </template>
 <script setup lang="ts">
-import { defineEmits } from "vue";
+import { defineEmits, defineProps } from "vue";
+
 const templateName = ref("");
 const templateSubject = ref("");
-const templateTextarea = ref("");
+const templateBody = ref("");
 const emit = defineEmits(["save"]);
 
 //POST call
-async function saveTemplate() {
+const saveTemplate = async () => {
   let body = {
     project_id: "123",
     name: templateName.value,
     subject: templateSubject.value,
-    body: templateTextarea.value,
+    body: templateBody.value,
     is_active: "1",
     type: "HTML",
     share_type: "PRIVATE",
@@ -90,9 +91,9 @@ async function saveTemplate() {
   );
   emit("save", body);
 
-  console.log("items", items._rawValue);
+  // console.log("items", items._rawValue);
   templateName.value = "";
   templateSubject.value = "";
-  templateTextarea.value = "";
-}
+  templateBody.value = "";
+};
 </script>

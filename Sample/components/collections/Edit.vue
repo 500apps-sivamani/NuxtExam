@@ -27,11 +27,11 @@
         </div>
       </div>
     </div>
-    <div class="row-span-2 col-span-4 bg-white mt-4 0px]">
+    <div class="row-span-2 col-span-4 bg-white mt-4 0px w-4/5">
       <div class="mx-4 h-[89%]">
         <textarea
           placeholder="Add Template Body"
-          v-model="templateTextarea"
+          v-model="templateBody"
           rows="10"
           cols="15"
           name="comment"
@@ -58,38 +58,41 @@
   </div>
 </template>
 <script setup lang="ts">
+import { defineProps } from "vue";
 
-const templateName = ref("");
-const templateSubject = ref("");
-const templateTextarea = ref("");
+const props = defineProps({
+  emailTemplate: { type: Object, default: () => {} },
+});
+console.log("props--->", props.emailTemplate);
 
-//POST call
-async function EditCall() {
+const templateName = ref(props.emailTemplate.name);
+const templateSubject = ref(props.emailTemplate.subject);
+const templateBody = ref(props.emailTemplate.body);
+
+//PUT call
+const EditCall = async () => {
   const options = {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1IjoiZTBjOTVkMDE4YTM2NGRlMjg1M2Q1M2VhMDM4OGU0N2UiLCJkIjoiMTY4MDA4MyIsInIiOiJzYSIsInAiOiJmcmVlIiwiYSI6ImZpbmRlci5pbyIsImwiOiJ1czEiLCJleHAiOjE2ODMyNzk3MDB9.UuZqClOMH6vQd0KFuAkG5pbohpB_gmhhH29_nuvuQSg`,
+      Authorization: `Bearer uvuQSg`,
     },
     body: {
       project_id: "123",
       name: templateName.value,
       subject: templateSubject.value,
-      body: templateTextarea.value,
+      body: templateBody.value,
       is_active: "1",
       type: "HTML",
       share_type: "PRIVATE",
       category: "category",
+      uid: props.emailTemplate.uid,
+      index: props.emailTemplate.index,
     },
   };
   const data = await useAuthLazyFetchPut(
-    `https://v1-orm-lib.mars.hipso.cc/email-templates/${}`,
+    `https://v1-orm-lib.mars.hipso.cc/email-templates/${props.emailTemplate.uid}`,
     options
   );
-
-  console.log("items", items._rawValue);
-  templateName.value = "";
-  templateSubject.value = "";
-  templateTextarea.value = "";
-}
+};
 </script>
